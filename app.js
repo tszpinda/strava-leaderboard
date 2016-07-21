@@ -2,9 +2,7 @@ var strava = require('strava-v3');
 var async = require('async');
 var Table = require('easy-table');
 
-segmentList().then(segments => {
-    return async.map(segments, leaderboardList, printResults);
-});
+segmentList().then(segments => async.map(segments, leaderboardList, printResults));
 
 function printResults(err, results) {
     for(var i = 0; i < results.length; i++){
@@ -23,14 +21,19 @@ function printResults(err, results) {
 }
 
 function leaderboardList(segment, callback) {
-    strava.segments.listLeaderboard({id: segment.id, following:true}, (err, payload) => {
-        if(err) return callback(err);
-       
-        var data = {segment: segment, efforts: []};
+    extractLeaderboardData(segment)
+        .then((data) => callback(null, data))
+        .catch((err) => callback(err, null));
+}
 
-        payload.entries.map(effort => data.efforts.push(effortToLeaderboardData(effort)));
-
-        callback(null, data);
+function extractLeaderboardData(segment) {
+    return new Promise((resolve, reject)=> {
+        strava.segments.listLeaderboard({id: segment.id, following:true}, (err, payload) => {
+            if(err) return reject(err); 
+            var data = {segment: segment, efforts: []};
+            payload.entries.map(effort => data.efforts.push(effortToLeaderboardData(effort)));
+            return resolve(data);
+        });
     });
 }
 
