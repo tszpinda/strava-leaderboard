@@ -2,12 +2,6 @@ var strava = require('strava-v3');
 var async = require('async');
 var Table = require('easy-table');
 
-var me = 15561615;
-var dave = 391321;
-var cookie = 5745197;
-
-var all = [me, dave, cookie];
-
 segmentList().then(segments => {
     return async.map(segments, leaderboardList, printResults);
 });
