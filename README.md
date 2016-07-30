@@ -14,7 +14,7 @@ echo '
   , "client_secret" :"check-starva"
   , "redirect_uri"  :"http://localhost:3000/auth-ok"
 }
-'
+' >> data/strava_config
 ```
 
 ## to run
